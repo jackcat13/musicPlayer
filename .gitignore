@@ -7,3 +7,5 @@ RemoteSystemsTempFiles
 */.project
 */target
 */.classpath
+
+musicPlayer-dataLayer/db
