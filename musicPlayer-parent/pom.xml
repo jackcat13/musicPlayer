@@ -4,4 +4,5 @@
 	<groupId>com.jackCat13.musicPlayer</groupId>
 	<artifactId>musicPlayer-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 </project>
