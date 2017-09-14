@@ -1,6 +1,7 @@
 package com.jackCat13.application;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.jackCat13.UIBeans.MusicRow;
@@ -26,10 +27,10 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.beans.binding.Bindings;
 
 @SuppressWarnings("restriction")
 public class MusicPlayerJFX extends Application {
@@ -130,7 +131,17 @@ public class MusicPlayerJFX extends Application {
 	}
 
 	private void setUpAddMusicButton(final Stage stage) {
+		try {
+			System.out.println(new File(".").getCanonicalPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//final Image addImage = new Image("./addImage.png");
 		addMusicButton = new Button("Add");
+		//final ImageView addImageView = new ImageView();
+		//addMusicButton.setGraphic(addImageView);
+		//addImageView.imageProperty().set(addImage);
 		addMusicButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent event) {
@@ -165,7 +176,7 @@ public class MusicPlayerJFX extends Application {
 				int index = musicsTable.getSelectionModel().getSelectedIndex();
 				int duration = Integer.parseInt(musicData.get(index).getMusicFadeOutDuration());
 				for (int i = 0; i < duration; i++) {
-					player.setVolume(player.getVolume()-0.0004);
+					player.setVolume(player.getVolume() - 0.0003);
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
@@ -192,6 +203,7 @@ public class MusicPlayerJFX extends Application {
 		componentLayout.setPadding(new Insets(20, 20, 20, 20));
 		componentLayout.setCenter(musicsTable);
 		HBox buttons = new HBox();
+		buttons.setSpacing(50);
 		componentLayout.setBottom(buttons);
 		buttons.getChildren().addAll(addMusicButton, playMusicButton, nextMusicButton);
 	}
