@@ -5,13 +5,5 @@
     <artifactId>musicPlayer-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>musicPlayer-ui</artifactId>
-  
-  <dependencies>
-  	<dependency>
-  		<groupId>com.jackCat13.musicPlayer</groupId>
-  		<artifactId>musicPlayer-business</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  </dependencies>
+  <artifactId>musicPlayer-common</artifactId>
 </project>

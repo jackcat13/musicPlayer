@@ -10,5 +10,5 @@ RemoteSystemsTempFiles
 */.classpath
 */*.iml
 
-musicPlayer-dataLayer/db
-musicPlayer-dataLayer/dbtest
+*/db
+*/dbtest

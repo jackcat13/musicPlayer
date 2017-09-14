@@ -30,5 +30,10 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>5.2.10.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jackCat13.musicPlayer</groupId>
+			<artifactId>musicPlayer-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

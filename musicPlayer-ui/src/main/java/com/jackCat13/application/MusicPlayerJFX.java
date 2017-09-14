@@ -1,6 +1,10 @@
 package com.jackCat13.application;
 
 import com.jackCat13.UIBeans.MusicRow;
+import com.jackCat13.servicesImplementation.MusicService;
+import com.jackCat13.uiToBusinessTransformers.MusicRowBusinessToMusicRowUI;
+import com.jackCat13.uiToBusinessTransformers.MusicRowUIToMusicRowBusiness;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -20,6 +24,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
 import java.io.File;
+import java.util.List;
 
 @SuppressWarnings("restriction")
 public class MusicPlayerJFX extends Application {
@@ -28,7 +33,7 @@ public class MusicPlayerJFX extends Application {
 
 	private TableView musicsTable;
 
-	private final ObservableList<MusicRow> musicData =
+	private final static ObservableList<MusicRow> musicData =
 			FXCollections.observableArrayList();
 
 	private static final String DEFAULT_FADE_OUT_DURATION = "400";
@@ -37,6 +42,8 @@ public class MusicPlayerJFX extends Application {
 
 	@Override
 	public void start(final Stage stage) throws Exception {
+		loadAllMusics();
+		
 		stage.setWidth(810);
 		stage.setHeight(600);
 		// met un titre dans la fen�tre
@@ -75,7 +82,10 @@ public class MusicPlayerJFX extends Application {
 			public void handle(ActionEvent event) {
 				File file = fileChooser.showOpenDialog(stage);
 				if (file != null) {
-					musicData.add(new MusicRow(file.getName(), file.getPath(), DEFAULT_FADE_OUT_DURATION));
+					MusicRow musicRow = new MusicRow(file.getName(), file.getPath(), DEFAULT_FADE_OUT_DURATION);
+					MusicService musicService = new MusicService();
+					musicService.addMusic(MusicRowUIToMusicRowBusiness.transformObject(musicRow));
+					musicData.add(musicRow);
 				}
 			}
 		});
@@ -108,5 +118,13 @@ public class MusicPlayerJFX extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	private static void loadAllMusics() {
+		MusicService musicService = new MusicService();
+		List<MusicRow> musicRowList = MusicRowBusinessToMusicRowUI.tranformObjectList(musicService.getAllMusics());
+		for (MusicRow musicRow : musicRowList) {
+			musicData.add(musicRow);
+		}
 	}
 }

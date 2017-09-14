@@ -5,12 +5,17 @@
     <artifactId>musicPlayer-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>musicPlayer-ui</artifactId>
+  <artifactId>musicPlayer-business</artifactId>
   
   <dependencies>
   	<dependency>
   		<groupId>com.jackCat13.musicPlayer</groupId>
-  		<artifactId>musicPlayer-business</artifactId>
+  		<artifactId>musicPlayer-dataLayer</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.jackCat13.musicPlayer</groupId>
+  		<artifactId>musicPlayer-common</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
