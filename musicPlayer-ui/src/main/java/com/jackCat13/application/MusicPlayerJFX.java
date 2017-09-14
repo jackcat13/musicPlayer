@@ -1,30 +1,31 @@
 package com.jackCat13.application;
 
+import java.io.File;
+import java.util.List;
+
 import com.jackCat13.UIBeans.MusicRow;
 import com.jackCat13.servicesImplementation.MusicService;
 import com.jackCat13.uiToBusinessTransformers.MusicRowBusinessToMusicRowUI;
 import com.jackCat13.uiToBusinessTransformers.MusicRowUIToMusicRowBusiness;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-
-import java.io.File;
-import java.util.List;
 
 @SuppressWarnings("restriction")
 public class MusicPlayerJFX extends Application {
@@ -35,29 +36,60 @@ public class MusicPlayerJFX extends Application {
 
 	private final static ObservableList<MusicRow> musicData =
 			FXCollections.observableArrayList();
+	
+	private Button addMusicButton;
+	
+	private Button playMusicButton;
+	
+	private BorderPane componentLayout;
+	
+	private MediaPlayer player;
+	
+	private List<MusicRow> musicListToPlay;
 
 	private static final String DEFAULT_FADE_OUT_DURATION = "400";
 
 	private static final double MIN_COLUMN_WIDTH = 250;
 
+	public static void main(String[] args) {
+		launch(args);
+	}
+	
 	@Override
 	public void start(final Stage stage) throws Exception {
 		loadAllMusics();
 		
 		stage.setWidth(810);
 		stage.setHeight(600);
-		// met un titre dans la fen�tre
 		stage.setTitle("Music player");
 
-		//The BorderPane has the same areas laid out as the
-		//BorderLayout layout manager
-		BorderPane componentLayout = new BorderPane();
-		componentLayout.setPadding(new Insets(20, 20, 20, 20));
+		setUpMusicsTable();
 
-		//create musics table
-		musicsTable = new TableView();
+		setUpButtons(stage);
 
-		//Set music table editable
+		setUpLayouts();
+		
+		// Create scene
+		Scene scene = new Scene(componentLayout, 800, 600);
+		scene.setFill(Color.SKYBLUE);
+		
+		// ajout de la sc�ne sur l'estrade
+        stage.setScene(scene);
+        // ouvrir le rideau
+        stage.show();
+	}
+
+	private void loadAllMusics() {
+		MusicService musicService = new MusicService();
+		List<MusicRow> musicRowList = MusicRowBusinessToMusicRowUI.tranformObjectList(musicService.getAllMusics());
+		for (MusicRow musicRow : musicRowList) {
+			musicData.add(musicRow);
+		}
+	}
+	
+	private void setUpMusicsTable() {
+		//Create music table
+		musicsTable = new TableView<MusicRow>();
 		musicsTable.setEditable(true);
 
 		//Create columns for musicTable
@@ -74,9 +106,15 @@ public class MusicPlayerJFX extends Application {
 		musicsTable.getColumns().addAll(musicNameColumn, musicPathColumn, musicFadeOutDurationColumn);
 		//Add data
 		musicsTable.setItems(musicData);
+	}
+	
+	private void setUpButtons(final Stage stage) {
+		setUpAddMusicButton(stage);
+		setUpPlayMusicButton();
+	}
 
-		//The button uses an inner class to handle the button click event
-		Button addMusicButton = new Button("Add");
+	private void setUpAddMusicButton(final Stage stage) {
+		addMusicButton = new Button("Add");
 		addMusicButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent event) {
@@ -89,42 +127,46 @@ public class MusicPlayerJFX extends Application {
 				}
 			}
 		});
-
-		Button playMusicButton = new Button("Play");
+	}
+	
+	private void setUpPlayMusicButton() {
+		playMusicButton = new Button("Play");
 		playMusicButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				MusicRow musicRow = (MusicRow) musicsTable.getSelectionModel().getSelectedItem();
-				int index = musicsTable.getSelectionModel().getSelectedIndex();
-				Media music = new Media(new File(musicRow.getMusicPath()).toURI().toString());
-				MediaPlayer mediaPlayer = new MediaPlayer(music);
-				mediaPlayer.play();
+				Media pick = new Media(new File(musicRow.getMusicPath()).toURI().toString());
+		        player = new MediaPlayer(pick);
+		        player.play();
+				setUpMusicPlayerListener();
 			}
 		});
-
+	}
+	
+	private void setUpLayouts() {
+		componentLayout = new BorderPane();
+		componentLayout.setPadding(new Insets(20, 20, 20, 20));
 		componentLayout.setCenter(musicsTable);
 		HBox buttons = new HBox();
 		componentLayout.setBottom(buttons);
 		buttons.getChildren().addAll(addMusicButton, playMusicButton);
-
-		// Create scene
-		Scene scene = new Scene(componentLayout, 800, 600);
-		scene.setFill(Color.SKYBLUE);
-		
-		// ajout de la sc�ne sur l'estrade
-        stage.setScene(scene);
-        // ouvrir le rideau
-        stage.show();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 	
-	private static void loadAllMusics() {
-		MusicService musicService = new MusicService();
-		List<MusicRow> musicRowList = MusicRowBusinessToMusicRowUI.tranformObjectList(musicService.getAllMusics());
-		for (MusicRow musicRow : musicRowList) {
-			musicData.add(musicRow);
-		}
+	private void setUpMusicPlayerListener() {
+		player.setOnEndOfMedia(new Runnable() {
+            public void run() {
+                player.stop();
+                int index = musicsTable.getSelectionModel().getSelectedIndex();
+                if(index < musicsTable.getItems().size()) {
+	                Media pick = new Media(new File(musicData.get(index+1).getMusicPath()).toURI().toString());
+	                player = new MediaPlayer(pick);
+			        player.play();
+					setUpMusicPlayerListener();
+					musicsTable.requestFocus();
+					musicsTable.getSelectionModel().select(index+1);
+					musicsTable.getFocusModel().focus(index+1);
+                }
+                return;
+            }
+        });
 	}
 }
